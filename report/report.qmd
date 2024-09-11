@@ -29,7 +29,7 @@ will follow the link to the github repo to evaluate how it looks.
 FYI - this is an HTML-style comment that is ignored by Quarto and Pandoc.
     You can add them anywhere to leave breadcrumbs for yourself!
 -->
-[[Link to repository](https://github.com/jleonard99/cmsc408-fa2024-hw2-template)]
+[[Link to repository](https://github.com/RyanTaa/HW2)]
 
 ## Assignment Overview
 
