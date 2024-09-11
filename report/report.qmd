@@ -1,0 +1,373 @@
+---
+title: Homework 2 - ER Diagrams
+author:
+    - name: Ryan Ta
+      email: tard@vcu.edu
+format:
+    html:
+        embed-resources: true
+        html-math-method: katex
+        theme: spacelab
+        toc: true
+
+## Useful references:
+
+# - Basic Markdown: https://quarto.org/docs/authoring/markdown-basics.html
+# - Quarto figures: https://quarto.org/docs/authoring/figures.html
+# - HTML document basics: https://quarto.org/docs/output-formats/html-basics.html
+# - Quarto guide: https://quarto.org/docs/guide/
+# - VS Code and Quarto: https://quarto.org/docs/tools/vscode.html
+#   (RTFM and GET THE EXTENSION!!!!)
+
+---
+
+<!--
+Update the link below to reflect YOUR repository.
+You will NOT be scored for your README unless you include this link.  The human grader
+will follow the link to the github repo to evaluate how it looks.
+
+FYI - this is an HTML-style comment that is ignored by Quarto and Pandoc.
+    You can add them anywhere to leave breadcrumbs for yourself!
+-->
+[[Link to repository](https://github.com/jleonard99/cmsc408-fa2024-hw2-template)]
+
+## Assignment Overview
+
+The basis of this assignment is understanding the relationship between entities and learning how to create a diagram based on their relationship. Entities are individual unique objects that have characteristics. We are tasked to see how the entities interact with each other and what characteristics they have. Then, we can put the information we have on those entities into a diagram to visually represent it. There are two diagram types that will be used, Chen Notation and Crows Foot Notation. Chen Notation uses shapes to show how all the entities are related to each other and their characteristics. Crows Foot Notation uses tables for each entity with their traits inside the table and connects the tables together.
+
+## Library Management System
+
+Picture a library that needs to manage books, members, and loans. Each book has a book ID, title, and author. Members have a member ID, name, and membership date. Loans have a loan ID, loan date, and return date. A member can borrow multiple books, and each book can be borrowed by multiple members over time. Each loan is associated with a single member borrowing a single book.
+
+### Conceptual design in Chen Notation
+
+Chen Notation uses shapes to represent entities, relations, and attributes. It also uses lines to connect the shapes together to show their how they are all connected. 
+
+```{dot}
+//| label: fig-chen-1
+//| fig-cap: "A simple Chen Diagram"
+//| fig-width: 100%
+graph ER {
+    // "graph" creates undirected graphs.  It can be used for more than just ER diagrams!
+    // There are many different layouts.  We're going to use layout=neato 
+    // See: https://graphviz.org/
+    //      https://graphviz.org/doc/info/lang.html
+    //      https://graphviz.org/docs/layouts/
+    //      https://graphviz.org/docs/layouts/neato/
+    
+    bgcolor=transparent;   
+
+    //these are useful, but appear not to work with layout=neato
+    //nodesep=2.00;  // Separation between nodes on the same level
+    //ranksep=0.80;  // Separation between nodes on different levels
+    //size="4,4";    // Graph size
+    //center=false   // Center diagram within graph canvas.
+
+    // See: https://graphviz.org/docs/layouts/neato/
+    layout=neato  // Very useful for auto placing nodes.  Minimizes node/edge energy in system
+    scale=1.2     // changes size of shapes all at once
+
+
+    // Set defaults for nodes
+    node [fontname="Helvetica,Arial,sans-serif",fontsize=10] // Smaller font size, reduced node size
+
+    // Define nodes
+    node [shape=box];
+    Book; Member; Loan;
+    node [shape=ellipse];
+    {node [label="ID"] id0; id1; id2;}
+    {node [label="date"] date0; date1;}
+    title; author; name; return;
+    
+    node [shape=diamond,style=filled,color=lightgrey]; 
+    "has1"; "has2";
+
+    // Set defaults for edges then draw edges
+    edge [fontname="Helvetica,Arial,sans-serif",fontsize=10] // Reduced font size for edges
+
+    
+    id0 -- Book;
+    title -- Book;
+    author -- Book;
+    Book -- "has1"; 
+    "has1" -- Loan; 
+    Loan -- id2;
+    Loan -- return;
+    Loan -- date1;
+    Loan -- "has2"
+    "has2" -- Member;
+    Member -- id1;
+    Member -- name;
+    Member -- date0;
+}
+
+```
+
+### Conceptual design in Crows Foot Notation 
+
+Crows Foot Notation uses tables for each entity and fills the table out with each of their attributes. It uses lines with different notations on them to represent hwo they are connected the and cardinality between them.
+
+```{mermaid}
+erDiagram 
+    
+    BOOK {
+        int bookID
+        string title
+        string author
+    }
+
+    MEMBER {
+        int memberID
+        string name
+        date membershipDate
+    }
+
+    LOAN {
+        int loanID
+        date loanDate
+        date returnDate
+        int bookID
+        int memberID
+    }
+
+    MEMBER ||--o{ LOAN : makes
+    BOOK ||--o{ LOAN : "is loaned in"
+
+```
+
+### Design assumptions, considerations and tradeoffs
+
+I decided that book and member has a one-to-many cardinality. This is because a book can have multiple loans overtime, and a member can have multiple loans at the same time. I also assumed that loan has a one-to-one cardinality with book and member because a loan can only have one member and one book.
+
+### Relation sets
+
+The following are the initial relation sets for the system:
+
+* book( <ins>book_id</ins>, title, author )
+* member( <ins>member_id</ins>, name, membership_date )
+* loan( <ins>loan_id</ins>, loan_date, return_date )
+
+## Restaurant Reservation System
+
+Envision a restaurant that wants to manage reservations, customers, and tables. Each reservation has a reservation ID, date, and time. Customers have a customer ID, name, and contact number. Tables have a table number, seating capacity, and location. A customer can make multiple reservations, and each reservation is for a single table. Each table can have multiple reservations over time, but each reservation is associated with only one customer.
+
+### Conceptual design in Chen Notation
+
+```{dot}
+//| label: fig-chen-1
+//| fig-cap: "A simple Chen Diagram"
+//| fig-width: 100%
+graph ER {
+    // "graph" creates undirected graphs.  It can be used for more than just ER diagrams!
+    // There are many different layouts.  We're going to use layout=neato 
+    // See: https://graphviz.org/
+    //      https://graphviz.org/doc/info/lang.html
+    //      https://graphviz.org/docs/layouts/
+    //      https://graphviz.org/docs/layouts/neato/
+    
+    bgcolor=transparent;   
+
+    //these are useful, but appear not to work with layout=neato
+    //nodesep=2.00;  // Separation between nodes on the same level
+    //ranksep=0.80;  // Separation between nodes on different levels
+    //size="4,4";    // Graph size
+    //center=false   // Center diagram within graph canvas.
+
+    // See: https://graphviz.org/docs/layouts/neato/
+    layout=neato  // Very useful for auto placing nodes.  Minimizes node/edge energy in system
+    scale=1.2     // changes size of shapes all at once
+
+
+    // Set defaults for nodes
+    node [fontname="Helvetica,Arial,sans-serif",fontsize=10] // Smaller font size, reduced node size
+
+    // Define nodes
+    node [shape=box];
+    Reservation; Customer; Table;
+    node [shape=ellipse];
+    {node [label="ID"] id0; id1;}
+    date; time; name; contact; number; seating; location;
+    
+    node [shape=diamond,style=filled,color=lightgrey]; 
+    "makes"; "has";
+
+    // Set defaults for edges then draw edges
+    edge [fontname="Helvetica,Arial,sans-serif",fontsize=10] // Reduced font size for edges
+
+    
+    id0 -- Reservation;
+    date -- Reservation;
+    time -- Reservation;
+    Reservation -- "makes"
+    "makes" -- Customer;
+    id1 -- Customer;
+    name -- Customer;
+    contact -- Customer;
+    Reservation -- "has"
+    "has" -- Table;
+    Table -- number;
+    Table -- seating;
+    Table -- location;
+}
+
+```
+
+### Conceptual design in Crows foot notation
+
+```{mermaid}
+erDiagram 
+    
+    RESRVATION {
+        int reservationID
+        date date
+        time time
+        int tableNumber
+        int customerID
+    }
+
+    CUSTOMER {
+        int customerID
+        string name
+        int contactNumber
+    }
+
+    TABLE {
+        int tableNumber
+        int seatingCapacity
+        location location
+    }
+
+    CUSTOMER ||--o{ RESRVATION : makes
+    TABLE ||--o{ RESRVATION : has
+
+```
+
+### Design assumptions, considerations and tradeoffs
+
+I assumed that reservation has a one-to-one cardinality with customer and table. This is because a reservation can only be associated with one customer and one table. I also had table and customer as a one-to-many cardinality with reservation. I think it is one-to-many because a table can be under multiple reservations over time, and a customer can have multiple reservations at once.
+
+### Relation sets
+
+The following are the initial relation sets for the system:
+
+* reservation( <ins>reservation_id</ins>, date, time )
+* customer( <ins>customer_id</ins>, name, contact_number )
+* table( <ins>table_number</ins>, seating_capacity, location )
+
+## Hotel Booking System
+
+Consider a hotel that wants to manage rooms, guests, and bookings. Each room has a room number, type, and rate. Guests have a guest ID, name, and contact information. Bookings have a booking ID, check-in date, and check-out date. A guest can make multiple bookings, and each room can be booked multiple times over different dates. Each booking is associated with one guest and one room.
+
+### Conceptual design in Chen Notation
+
+```{dot}
+//| label: fig-chen-1
+//| fig-cap: "A simple Chen Diagram"
+//| fig-width: 100%
+graph ER {
+    // "graph" creates undirected graphs.  It can be used for more than just ER diagrams!
+    // There are many different layouts.  We're going to use layout=neato 
+    // See: https://graphviz.org/
+    //      https://graphviz.org/doc/info/lang.html
+    //      https://graphviz.org/docs/layouts/
+    //      https://graphviz.org/docs/layouts/neato/
+    
+    bgcolor=transparent;   
+
+    //these are useful, but appear not to work with layout=neato
+    //nodesep=2.00;  // Separation between nodes on the same level
+    //ranksep=0.80;  // Separation between nodes on different levels
+    //size="4,4";    // Graph size
+    //center=false   // Center diagram within graph canvas.
+
+    // See: https://graphviz.org/docs/layouts/neato/
+    layout=neato  // Very useful for auto placing nodes.  Minimizes node/edge energy in system
+    scale=1.2     // changes size of shapes all at once
+
+
+    // Set defaults for nodes
+    node [fontname="Helvetica,Arial,sans-serif",fontsize=10] // Smaller font size, reduced node size
+
+    // Define nodes
+    node [shape=box];
+    Room; Guest; Booking;
+    node [shape=ellipse];
+    {node [label="ID"] id0; id1;}
+    number; type; rate; name; contact; "check-in"; "check-out";
+    
+    node [shape=diamond,style=filled,color=lightgrey]; 
+    "makes"; "has";
+
+    // Set defaults for edges then draw edges
+    edge [fontname="Helvetica,Arial,sans-serif",fontsize=10] // Reduced font size for edges
+
+    number -- Room;
+    type -- Room;
+    rate -- Room;
+    Room -- "has"
+    "has" -- Booking;
+    id0 -- Booking;
+    "check-in" -- Booking;
+    "check-out" -- Booking;
+    Booking -- "makes";
+    "makes" -- Guest;
+    id1 -- Guest;
+    name -- Guest;
+    contact -- Guest;
+}
+
+```
+
+### Conceptual design in Crows foot notation
+
+```{mermaid}
+erDiagram 
+    
+    ROOM {
+        int roomNumber
+        type type
+        int rate
+    }
+
+    GUEST {
+        int guestID
+        string name
+        contact contactInformation
+    }
+
+    BOOKING {
+        int bookingID
+        date checkInDate
+        date checkOutDate
+        int roomNumber
+        int guestID
+    }
+
+    ROOM ||--o{ BOOKING : has
+    GUEST ||--o{ BOOKING : makes
+
+```
+
+### Design assumptions, considerations and tradeoffs
+
+I think that booking has a one-to-one cardinality with room and guest because there is only one guest and one room assigned to each booking. For guest and room, I think it is a one-to-many cardinality. I think this because guests can make multiple reservations for different times or rooms, and rooms can be reserved for multiple different times.
+
+### Relation sets
+
+The following are the initial relation sets for the system:
+
+* room( <ins>room_number</ins>, type, rate )
+* guest( <ins>guest_id</ins>, name, contact_information )
+* booking( <ins>booking_id</ins>, check-in_date, check-out_date )
+
+## Reflection
+
+What do you find most difficult about the assignment?
+: I found it most difficult to make sure I wasn't missing anything in my diagrams and that the relationship between the entities made sense.  
+
+What do you find easiest about the assignment?
+: I found the actual process of creating the diagrams was fairly simple which made it the easiest.
+
+What did you learn that will name the next assignment easier?
+: I gained a better understanding of processing problems and finding all the aspects of it, so that I can analyze and diagram it. 
+
